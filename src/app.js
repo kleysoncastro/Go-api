@@ -18,4 +18,4 @@ class App {
   }
 }
 // esta exportando uma instacia
-module.exports = new App.server;
+module.exports = new App().server;
