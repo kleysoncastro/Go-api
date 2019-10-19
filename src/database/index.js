@@ -16,6 +16,9 @@ class Database {
 
     // percorre o array models e chama o metodo init
     models.map(model => model.init(this.connection));
+    models.map(
+      model => model.associate && model.associate(this.connection.models)
+    );
   }
 }
 export default new Database();
