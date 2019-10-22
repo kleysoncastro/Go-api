@@ -15,13 +15,13 @@ class ScheduleController {
         .json({ erro: 'Usuario não é um provedor de serviços' });
     }
 
-    const { date } = req.requery;
+    const { date } = req.query;
     const parseDate = parseISO(date);
 
     const appointments = await Appointment.findAll({
       where: {
         provider_id: req.userId,
-        canceled_at: null,
+        canceled_ate: null,
         date: {
           [Op.between]: [startOfDay(parseDate), endOfDay(parseDate)],
         },
