@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { startOfHour, parseISO, isBefore, format } from 'date-fns';
+import { startOfHour, parseISO, isBefore, format, subHours } from 'date-fns';
 import pt from 'date-fns/locale/pt-BR';
 import User from '../models/User';
 import Appointment from '../models/Appointment';
@@ -115,6 +115,31 @@ class AppointmentController {
     });
 
     return res.status(200).json(appointment);
+  }
+
+  async delete(req, res) {
+    const appointment = await Appointment.findByPk(req.params.id);
+
+    console.log(`-----------############${appointment.user_id}`);
+
+    if (appointment.user_id !== req.userId) {
+      res
+        .status(401)
+        .json({ erro: 'Você nao tem permicao para fazer este procedimento' });
+    }
+
+    const dateWinthSub = subHours(appointment.date, 2);
+
+    if (isBefore(dateWinthSub, new Date())) {
+      return res.status(401).json({
+        erro: 'Este procesimento só pode ser feito 2h antes da hora marcada',
+      });
+    }
+
+    appointment.canceled_ate = new Date();
+    await appointment.save();
+
+    return res.json(appointment);
   }
 }
 
