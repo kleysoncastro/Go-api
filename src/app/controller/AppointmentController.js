@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { startOfHour, parseISO, isBefore, format } from 'date-fns';
-import pt from 'date-fns/locale/pt';
+import pt from 'date-fns/locale/pt-BR';
 import User from '../models/User';
 import Appointment from '../models/Appointment';
 import File from '../models/File';
@@ -58,6 +58,12 @@ class AppointmentController {
     });
     if (!checkIsProvider) {
       return res.status(401).json({ erro: 'voce nao tem permição' });
+    }
+
+    if (provider_id === checkIsProvider.id) {
+      return res
+        .status(401)
+        .json({ erro: 'Voce nao pode agendar consigo mesmo' });
     }
 
     /*
