@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import Youch from 'youch';
@@ -34,8 +35,12 @@ class App {
 
   execeptionHandler() {
     this.server.use(async (err, req, res, next) => {
-      const errros = await new Youch(err, req).toJSON();
-      return res.status(500).json(errros);
+      if (process.env.NODE_ENV === 'development') {
+        const errros = await new Youch(err, req).toJSON();
+        return res.status(500).json(errros);
+      }
+
+      res.status(500).json({ erro: 'Erro no lada do servidor' });
     });
   }
 }
