@@ -5,6 +5,7 @@ import User from '../models/User';
 import Appointment from '../models/Appointment';
 import File from '../models/File';
 import Notification from '../schema/Notification';
+import Mail from '../../lib/Mail';
 
 class AppointmentController {
   /*
@@ -57,10 +58,12 @@ class AppointmentController {
       where: { id: provider_id, provider: true },
     });
     if (!checkIsProvider) {
-      return res.status(401).json({ erro: 'voce nao tem permição' });
+      return res
+        .status(401)
+        .json({ erro: 'Usuario informado nao é um prestar de servico' });
     }
 
-    if (provider_id === checkIsProvider.id) {
+    if (provider_id === req.userId) {
       return res
         .status(401)
         .json({ erro: 'Voce nao pode agendar consigo mesmo' });
@@ -118,9 +121,19 @@ class AppointmentController {
   }
 
   async delete(req, res) {
-    const appointment = await Appointment.findByPk(req.params.id);
+    const appointment = await Appointment.findByPk(
+      req.params.id,
 
-    console.log(`-----------############${appointment.user_id}`);
+      {
+        include: [
+          {
+            model: User,
+            as: 'provider',
+            attributes: ['name', 'email'],
+          },
+        ],
+      }
+    );
 
     if (appointment.user_id !== req.userId) {
       res
@@ -138,6 +151,12 @@ class AppointmentController {
 
     appointment.canceled_ate = new Date();
     await appointment.save();
+
+    await Mail.sendMail({
+      to: `${appointment.provider.name} <${appointment.provider.email}>`,
+      subject: 'Agendameto cancelado',
+      text: 'Vace tem um nova agendamento',
+    });
 
     return res.json(appointment);
   }
