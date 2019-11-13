@@ -15,7 +15,7 @@ class UserController {
     });
 
     if (!(await schema.isValid(req.body))) {
-      res
+      return res
         .status(400)
         .json({ erro: 'Campos invalidos, verifique e tente novamente' });
     }
