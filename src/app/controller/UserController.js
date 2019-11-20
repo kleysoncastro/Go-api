@@ -67,6 +67,12 @@ class UserController {
 
     const user = await User.findByPk(req.userId);
 
+    if (!user) {
+      return res.json({ erro: 'User nao existe' });
+    }
+
+    await user.update(req.body);
+
     if (email !== user.email) {
       const userExists = await User.findOne({ where: { email } });
 
