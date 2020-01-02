@@ -23,7 +23,7 @@ routes.get('/provider', ProviderController.index);
 
 routes.put('/user', UserController.update);
 
-routes.get('/prvider/:providerId/avalable', AvalableController.index);
+routes.get('/provider/:providerId/avalable', AvalableController.index);
 
 routes.post('/appointment', AppointmentController.store);
 routes.get('/appointment', AppointmentController.index);
